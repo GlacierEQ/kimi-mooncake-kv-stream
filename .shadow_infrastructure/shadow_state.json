@@ -1,0 +1,9 @@
+{
+  "system_id": "kimi-mooncake-kv-stream",
+  "shadow_mode": "ACTIVE",
+  "mastermind_synced": true,
+  "telemetry": {
+    "cache_hit_ratio": 0.9375,
+    "status": "MOONCAKE_STREAM_OPTIMAL"
+  }
+}
