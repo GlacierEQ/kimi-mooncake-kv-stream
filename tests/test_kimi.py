@@ -1,5 +1,9 @@
 """Test suite for Kimi Mooncake KV Stream solution."""
+import sys
 import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from kimi_mooncake_kv_stream import KimiMooncakeKVStream
 
 class TestKimiMooncakeKVStream(unittest.TestCase):
