@@ -1,17 +1,18 @@
 {
-  "repo_name": "kimi-mooncake-kv-stream",
-  "file_count": 11,
+  "file_count": 13,
   "hashes": {
-    "README.md": "9bb18c391cf8f0198ba4e5c02e16217f8f370aeb3dae91d6b4a66297f42fc8d3",
-    "AKOS.md": "d99a05012303cf506e72e96967749ad7682f1e5c44a170c24d31c8a40c6f0c0b",
     "AGENTS.md": "9129e816db86ccd131700670754c23c3e7e5feb667cfcbf9f0777f97baeffe33",
-    "HELIX_STRAND.md": "224e646bd870e983642b771e7c7a6a6daecb373af8e099e1b0c452d645ad0378",
-    "mastermind_sidecar.py": "cda2c061d0a4a70284984e986e46f23406e9db0b9715f2822c73d4171d923db7",
-    "SECURITY_AND_FLEET_OPS.md": "26141c0f07d95847d679de423ddb7bdee6f3e319d204383c89a58d6d3bb610c7",
+    "AKOS.md": "d99a05012303cf506e72e96967749ad7682f1e5c44a170c24d31c8a40c6f0c0b",
     "HELIX.md": "f370dbf26ce428f6caf6d1c4a52b51a54f613ae9715fbc41f784d85dded605c5",
-    "tests/test_kimi.py": "72261ab3852d16c17dcf83d7766a15d092aee06c1de2a61151a289f2d8ac6b0e",
-    "tests/test_kimi_k3.py": "f1d142d89a0d81062754cfdb356b17b45093a2da5000d33fd414c1d5efa46673",
+    "HELIX_STRAND.md": "224e646bd870e983642b771e7c7a6a6daecb373af8e099e1b0c452d645ad0378",
+    "README.md": "69d03e60b0d802166cd07b6d52e74a1fcb4d76bcee8e5ed503b2fa44233ac878",
+    "SECURITY_AND_FLEET_OPS.md": "26141c0f07d95847d679de423ddb7bdee6f3e319d204383c89a58d6d3bb610c7",
+    "mastermind_sidecar.py": "cda2c061d0a4a70284984e986e46f23406e9db0b9715f2822c73d4171d923db7",
     "src/kimi_k3_engine.py": "255acb2fb9872741f95a5e79f4a21fff00fbaf77f07ff6f904c358aa70dabe78",
-    "src/kimi_mooncake_kv_stream.py": "7b14403679d1ec4cdb251fd52c3dc3cc9d6f4ec722babe463e05e002e52d2d07"
+    "src/kimi_mooncake_kv_stream.py": "7b14403679d1ec4cdb251fd52c3dc3cc9d6f4ec722babe463e05e002e52d2d07",
+    "src/kv_cache_ring.rs": "42434c432f1e2bbe8200e7323bcd52af27775264cbe8fb59c53f99abd4c94514",
+    "src/mooncake_scheduler.go": "f90bb23f277bea94921094b13949b0bf8094f7086ec5cca1dfcb2a4739b5c5ef",
+    "tests/test_kimi.py": "72261ab3852d16c17dcf83d7766a15d092aee06c1de2a61151a289f2d8ac6b0e",
+    "tests/test_kimi_k3.py": "f1d142d89a0d81062754cfdb356b17b45093a2da5000d33fd414c1d5efa46673"
   }
 }
