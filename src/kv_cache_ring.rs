@@ -1,7 +1,7 @@
-/// Kimi Mooncake KV Cache Ring Buffer — Zero-Copy Disaggregated Cache
-/// Implements a lock-free ring buffer for KV tensor streaming across
-/// disaggregated prefill/decode nodes with RDMA-style semantics.
-
+/// Local KV-cache ring-buffer reference.
+///
+/// This module exercises atomic index bookkeeping in process. It does not perform
+/// RDMA, zero-copy network transfer, or distributed prefill/decode coordination.
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const RING_CAPACITY: usize = 65536;
@@ -24,13 +24,23 @@ pub struct KVCacheRing {
     total_evictions: AtomicU64,
 }
 
+impl Default for KVCacheRing {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl KVCacheRing {
     pub fn new() -> Self {
         let mut buffer = Vec::with_capacity(RING_CAPACITY);
         for _ in 0..RING_CAPACITY {
             buffer.push(KVCacheEntry {
-                layer_id: 0, head_id: 0, seq_pos: 0,
-                key_norm: 0.0, value_norm: 0.0, timestamp_ns: 0,
+                layer_id: 0,
+                head_id: 0,
+                seq_pos: 0,
+                key_norm: 0.0,
+                value_norm: 0.0,
+                timestamp_ns: 0,
             });
         }
         KVCacheRing {
@@ -42,15 +52,15 @@ impl KVCacheRing {
         }
     }
 
-    /// Push a KV entry into the ring. Returns true if successful, evicts oldest if full.
+    /// Push an entry into the local ring, evicting the oldest slot when full.
     pub fn push(&mut self, entry: KVCacheEntry) -> bool {
         let tail = self.tail.load(Ordering::Acquire);
         let head = self.head.load(Ordering::Acquire);
         let next_tail = (tail + 1) % self.capacity as u64;
 
         if next_tail == head {
-            // Ring full — evict oldest entry
-            self.head.store((head + 1) % self.capacity as u64, Ordering::Release);
+            self.head
+                .store((head + 1) % self.capacity as u64, Ordering::Release);
             self.total_evictions.fetch_add(1, Ordering::Relaxed);
         }
 
@@ -60,22 +70,22 @@ impl KVCacheRing {
         true
     }
 
-    /// Pop oldest KV entry from the ring
+    /// Remove and return the oldest logical entry.
     pub fn pop(&self) -> Option<&KVCacheEntry> {
         let head = self.head.load(Ordering::Acquire);
         let tail = self.tail.load(Ordering::Acquire);
         if head == tail {
             return None;
         }
-        Some(&self.buffer[head as usize % self.capacity])
+        let idx = head as usize % self.capacity;
+        self.head
+            .store((head + 1) % self.capacity as u64, Ordering::Release);
+        Some(&self.buffer[idx])
     }
 
-    /// Compute cache pressure ratio (0.0 = empty, 1.0 = full)
+    /// Compute local ring occupancy ratio (0.0 = empty, approaching 1.0 = full).
     pub fn pressure(&self) -> f64 {
-        let head = self.head.load(Ordering::Acquire);
-        let tail = self.tail.load(Ordering::Acquire);
-        let used = if tail >= head { tail - head } else { self.capacity as u64 - head + tail };
-        used as f64 / self.capacity as f64
+        self.len() as f64 / self.capacity as f64
     }
 
     pub fn eviction_count(&self) -> u64 {
@@ -85,7 +95,11 @@ impl KVCacheRing {
     pub fn len(&self) -> usize {
         let head = self.head.load(Ordering::Acquire);
         let tail = self.tail.load(Ordering::Acquire);
-        if tail >= head { (tail - head) as usize } else { self.capacity - head as usize + tail as usize }
+        if tail >= head {
+            (tail - head) as usize
+        } else {
+            self.capacity - head as usize + tail as usize
+        }
     }
 
     pub fn is_empty(&self) -> bool {
@@ -97,17 +111,37 @@ impl KVCacheRing {
 mod tests {
     use super::*;
 
+    fn entry(seq_pos: u64) -> KVCacheEntry {
+        KVCacheEntry {
+            layer_id: 0,
+            head_id: 0,
+            seq_pos,
+            key_norm: 1.0,
+            value_norm: 0.5,
+            timestamp_ns: seq_pos,
+        }
+    }
+
     #[test]
-    fn test_push_pop_cycle() {
+    fn test_push_pop_cycle_advances_head() {
         let mut ring = KVCacheRing::new();
         assert!(ring.is_empty());
-        ring.push(KVCacheEntry {
-            layer_id: 0, head_id: 0, seq_pos: 42,
-            key_norm: 1.0, value_norm: 0.5, timestamp_ns: 100,
-        });
+        ring.push(entry(42));
         assert_eq!(ring.len(), 1);
-        let entry = ring.pop().unwrap();
-        assert_eq!(entry.seq_pos, 42);
+        let popped = ring.pop().unwrap();
+        assert_eq!(popped.seq_pos, 42);
+        assert!(ring.is_empty());
+        assert!(ring.pop().is_none());
+    }
+
+    #[test]
+    fn test_fifo_order() {
+        let mut ring = KVCacheRing::new();
+        ring.push(entry(1));
+        ring.push(entry(2));
+        assert_eq!(ring.pop().unwrap().seq_pos, 1);
+        assert_eq!(ring.pop().unwrap().seq_pos, 2);
+        assert!(ring.is_empty());
     }
 
     #[test]
@@ -115,11 +149,9 @@ mod tests {
         let mut ring = KVCacheRing::new();
         assert_eq!(ring.pressure(), 0.0);
         for i in 0..1000 {
-            ring.push(KVCacheEntry {
-                layer_id: 0, head_id: 0, seq_pos: i,
-                key_norm: 1.0, value_norm: 1.0, timestamp_ns: i,
-            });
+            ring.push(entry(i));
         }
         assert!(ring.pressure() > 0.0);
+        assert!(ring.pressure() < 1.0);
     }
 }

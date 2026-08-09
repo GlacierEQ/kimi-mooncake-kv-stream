@@ -1,51 +1,72 @@
-# Kimi Mooncake KV Stream — Disaggregated KV Cache Engine 🌙
+# Disaggregated KV Streaming Study
 
-> **Rust lock-free ring buffer & Go disaggregated prefill/decode scheduler for Kimi K3 Mooncake architecture.**
+Independent GlacierEQ portfolio work exploring local cache-reuse arithmetic, request scheduling, and ring-buffer mechanics inspired by publicly discussed disaggregated prefill/decode patterns.
 
-[![Rust](https://img.shields.io/badge/Rust-Lock--Free-orange)]()
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8)]()
-[![Python](https://img.shields.io/badge/Python-3.9+-blue)]()
-[![Domain](https://img.shields.io/badge/Domain-Disaggregated%20LLM-blue)]()
+**Status:** local scenario models + Rust/Go reference implementations.  
+**Evidence tokens:** `MODELED_DISAGGREGATED_KV_SCENARIO_NOT_KIMI_RUNTIME` and `MODELED_KIMI_ARCHITECTURE_SCENARIO_NOT_MODEL_EXECUTION`.
 
----
+This repository is **not affiliated with, endorsed by, or operated by Moonshot AI or Kimi**. It does not claim proprietary model access, Mooncake deployment, RDMA transport, measured TTFT, or execution of a Kimi model.
 
-## 🎯 For Recruiters & Hiring Managers
+## Verified capabilities
 
-This repository implements **Kimi's Mooncake Disaggregated Prefill/Decode Engine** — separating compute-heavy prefill nodes from memory-heavy decode nodes for massive LLM inference throughput. It demonstrates:
+### Python cache-reuse scenario
 
-- **Rust lock-free KV ring buffer** handling RDMA-style zero-copy tensor transfers
-- **Go priority-aware scheduler** routing requests based on node memory pressure and KV cache size
-- **Python Kimi K3 engine interface** supporting 2.8T linear attention streams
-- **Cache pressure mitigation** with automatic eviction of low-entropy KV cache entries
+`src/kimi_mooncake_kv_stream.py` deterministically computes from explicit inputs and timing assumptions:
 
-**Why this matters**: Disaggregating prefill and decode phases is the modern standard for scaling long-context LLM serving architectures.
+- matched-prefix cache ratio;
+- uncached token count;
+- modeled uncached/cached TTFT;
+- modeled TTFT reduction;
+- fail-closed invalid prompt/prefix/timing inputs.
 
----
+Those timing numbers are assumptions supplied to a local model, **not measurements from Kimi or Mooncake infrastructure**.
 
-## 🔬 For Engineers & Technical Reviewers
+### Python architecture assumptions
 
-### Core Components
+`src/kimi_k3_engine.py` evaluates explicit local scenarios for:
 
-| Component | Language | Purpose |
-|---|---|---|
-| `src/kv_cache_ring.rs` | Rust | Atomic lock-free ring buffer for zero-copy KV streaming |
-| `src/mooncake_scheduler.go` | Go | Priority-aware disaggregated node scheduler |
-| `src/kimi_k3_engine.py` | Python | Kimi K3 linear attention model harness |
-| `tests/` | Python | End-to-end Mooncake streaming simulation |
+- linear KV baseline versus fixed-state storage;
+- a simple sqrt(depth) variance-ratio heuristic;
+- configured expert-imbalance assumptions.
 
----
+The defaults are scenario parameters, not assertions about Kimi model size, KDA/AttnRes/MoonEP fidelity, training behavior, or throughput.
 
-## 🤖 ML/AI & Programmatic Mesh Integration
+### Rust local ring buffer
 
-- **MCP Tool**: `mooncake_stats()` — inspect prefill/decode node utilization
-- **Mastermind Sidecar**: Fully connected to APEX Highway mesh
-- **SHA-256 Integrity**: Tracked in `.integrity/file_hashes.json`
+`src/kv_cache_ring.rs` is a local in-process ring-buffer reference. Its tests verify FIFO push/pop behavior, logical head advancement, and occupancy. It does **not** implement or prove RDMA or zero-copy distributed transport.
 
----
+### Go local scheduler
 
-## ⚡ Quick Start
+`src/mooncake_scheduler.go` is a local priority-aware prefill/decode node-selection reference. CI compiles it for build correctness; it does not establish a deployed Mooncake scheduler.
+
+## Native proof
 
 ```bash
-python3 src/kimi_k3_engine.py
-python3 tests/test_kimi_k3.py
+PYTHONPATH=src python -m unittest discover -s tests -p 'test_*.py' -v
+rustc --test src/kv_cache_ring.rs -o /tmp/kv_ring_tests
+/tmp/kv_ring_tests
+go test src/mooncake_scheduler.go
 ```
+
+The repository-owned Public Truth Gate runs Python 3.11 and 3.13, Rust tests, Go compilation, and public-boundary checks on the exact source head.
+
+## Explicit nonclaims
+
+Current evidence does **not** establish:
+
+- execution of Kimi K1.5/K3 or a 2.8T-parameter model;
+- a faithful production implementation of KDA, AttnRes, MoonEP, or Mooncake;
+- 2M+ live-context serving;
+- measured 98.4% cache reuse or sub-millisecond routing;
+- measured TTFT/throughput improvements;
+- RDMA or zero-copy network transfer;
+- automatic low-entropy KV eviction;
+- MCP tool registration;
+- live APEX/AKOS/Mastermind connectivity;
+- Moonshot AI/Kimi employment, endorsement, affiliation, or proprietary access.
+
+Those require separate model, network, or deployment receipts.
+
+## Why the capability matters
+
+The engineering value is in the concrete local mechanisms—cache-reuse arithmetic, bounded scenario assumptions, scheduler selection logic, and corrected FIFO ring behavior—while keeping company/runtime claims outside the evidence boundary until they are actually measured.
