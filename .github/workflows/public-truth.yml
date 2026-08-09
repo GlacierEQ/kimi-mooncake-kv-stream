@@ -44,8 +44,10 @@ jobs:
         run: |
           rustc --test src/kv_cache_ring.rs -o /tmp/kv_ring_tests
           /tmp/kv_ring_tests
-      - name: Compile Go scheduler
-        run: go test src/mooncake_scheduler.go
+      - name: Run Go scheduler tests
+        env:
+          GO111MODULE: "off"
+        run: go test ./src
       - name: Verify public truth boundary
         run: |
           grep -q 'MODELED_DISAGGREGATED_KV_SCENARIO_NOT_KIMI_RUNTIME' README.md
