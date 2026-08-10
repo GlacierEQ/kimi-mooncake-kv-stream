@@ -1,0 +1,31 @@
+{
+  "schema": "glaciereq.proof-receipt.v1",
+  "repository": "GlacierEQ/kimi-mooncake-kv-stream",
+  "source_sha": "64b615eb6ec22cfab2547342951eef40c43705fe27663fce545e7e9dbdf60d1c",
+  "proof_id": "elite-kimi-mooncake-kv-stream-1786335149",
+  "environment": {
+    "python": "/Users/kcbflux/job-app/excellence/.venv-elite/bin/python",
+    "PYTHONPATH": "/Users/kcbflux/job-app/repos/kimi-mooncake-kv-stream:/Users/kcbflux/job-app/repos/kimi-mooncake-kv-stream/src",
+    "entry": "unittest"
+  },
+  "tests": [
+    "/Users/kcbflux/job-app/excellence/.venv-elite/bin/python -m unittest discover -s tests -v (x2)"
+  ],
+  "adversarial_tests": [
+    "tests/test_adversarial.py"
+  ],
+  "runtime": {
+    "operate": "scripts/operate.py (x2)",
+    "dual_run_ok": true,
+    "proof_dual_run_ok": true
+  },
+  "result": "PASS",
+  "limitations": [
+    "not production deployed",
+    "reference implementation only"
+  ],
+  "timestamp": "2026-08-10T04:12Z",
+  "artifact_hashes": {
+    "operability_receipt": "4f7bd5a10cbf8b33ec4dab0571bf95285abb971cf2bb0b8a1b8b7dbd57ff9515"
+  }
+}

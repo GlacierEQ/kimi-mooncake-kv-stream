@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.promotion-authority-grant.v1",
+  "repository": "GlacierEQ/kimi-mooncake-kv-stream",
+  "source_sha": "64b615eb6ec22cfab2547342951eef40c43705fe27663fce545e7e9dbdf60d1c",
+  "proof_receipt_digest": "81818d81fff41b9c58b520bfd98578c890346f9bd549c0af615950d22d452a8c",
+  "not_after": 1788927149.234226,
+  "mac": "d1e89757c52ed98712e219b10d0b5932763e8ba8a871d50ae9b5e839cf38c4d7",
+  "issuer": "local_operator_promotion_authority",
+  "verified": true,
+  "secret_ref": "src/promotion_authority.py::LOCAL_OPERATOR_SECRET"
+}

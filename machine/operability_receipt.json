@@ -1,0 +1,30 @@
+{
+  "schema": "glaciereq.operability-receipt.v1",
+  "repository": "GlacierEQ/kimi-mooncake-kv-stream",
+  "at": "2026-08-10T04:12Z",
+  "source_sha": "64b615eb6ec22cfab2547342951eef40c43705fe27663fce545e7e9dbdf60d1c",
+  "entry": "scripts/operate.py",
+  "primary_output": {
+    "module": "kimi_k3_engine",
+    "ok": true,
+    "repository": "GlacierEQ/kimi-mooncake-kv-stream",
+    "smoke": {
+      "args": [],
+      "content_checked": true,
+      "invoked": true,
+      "kind": "class",
+      "method": "compute_attnres_scaling_gain",
+      "module_local": true,
+      "name": "KimiK3Engine",
+      "result": {
+        "attnres_normalized_variance": 1.0,
+        "depth_layers": 64,
+        "gradient_stability_gain": 8.0,
+        "status": "ATTNRES_STABILITY_PASS",
+        "vanilla_residual_variance": 8.0
+      }
+    }
+  },
+  "dual_run_ok": true,
+  "result": "PASS"
+}
