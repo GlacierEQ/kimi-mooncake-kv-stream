@@ -70,7 +70,6 @@ class KimiMooncakeKVStream:
             "cached_prefix_tokens": matched_prefix_tokens,
             "uncached_tokens": uncached_tokens,
             "cache_hit_ratio": round(cache_hit_ratio, 4),
-<<<<<<< HEAD
             "cache_hit_target": self.cache_hit_target,
             "modeled_ttft_uncached_ms": round(ttft_uncached_ms, 4),
             "modeled_ttft_cached_ms": round(ttft_cached_ms, 4),
@@ -80,10 +79,3 @@ class KimiMooncakeKVStream:
             "configured_nodes": self.disaggregated_nodes,
             "evidence_state": EVIDENCE_STATE,
         }
-=======
-            "ttft_uncached_ms": round(ttft_uncached_ms, 2),
-            "ttft_optimized_ms": round(ttft_cached_ms, 2),
-            "latency_reduction_percent": round((1.0 - (ttft_cached_ms / ttft_uncached_ms)) * 100.0, 2),
-            "status": "MOONCAKE_STREAM_OPTIMAL"
-            }
->>>>>>> cbce7ad (chore: Hyper Excellence Activation & structural matrix alignment)
